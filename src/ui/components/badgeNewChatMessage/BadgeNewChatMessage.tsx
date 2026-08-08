@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AppRoutes } from "../../pages/layout/AppRoutes";
 import { useDependencies } from "../../context/useDependencies";
+import { Badge, BadgeContainer } from "./BadgeNewChatMessage.styles";
 
 export const BadgeNewChatMessage = ({ location }: { location: string }) => {
   const isActiveTabChat = location === AppRoutes.chat;
@@ -25,29 +26,7 @@ export const BadgeNewChatMessage = ({ location }: { location: string }) => {
 
   return (
     <>
-      <div style={{ position: "absolute", top: -2, marginLeft: "65px" }}>
-        {shouldShowBadge && <Badge>New</Badge>}
-      </div>
+      <BadgeContainer>{shouldShowBadge && <Badge>New</Badge>}</BadgeContainer>
     </>
   );
 };
-
-const Badge = ({ children }: { children: React.ReactNode }) => (
-  <span
-    style={{
-      position: "absolute",
-      top: -2,
-      right: "10%",
-      background: "#d32f2f",
-      color: "#fff",
-      borderRadius: 10,
-      padding: "0 5px",
-      fontSize: 10,
-      minWidth: 16,
-      fontWeight: "bold",
-      border: "2px solid #000",
-    }}
-  >
-    {children}
-  </span>
-);

@@ -1,4 +1,9 @@
 import { useConnectionStatus } from "../../hooks/useConnectionStatus";
+import {
+  StatusContainer,
+  StatusCode,
+  StatusWrapper,
+} from "./ConnectionStatus.styles";
 
 export const ConnectionStatus = () => {
   const connectionStatus = useConnectionStatus();
@@ -11,13 +16,13 @@ export const ConnectionStatus = () => {
         : "#dc3545";
 
   return (
-    <div style={{ position: "absolute", top: -2, marginLeft: "45px" }}>
-      <div style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+    <StatusContainer>
+      <StatusWrapper>
         <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
           <circle cx="6" cy="6" r="6" fill={color} />
         </svg>
-        <span style={{ fontSize: 12, color: "#333" }}>{connectionStatus}</span>
-      </div>
-    </div>
+        <StatusCode>{connectionStatus}</StatusCode>
+      </StatusWrapper>
+    </StatusContainer>
   );
 };
