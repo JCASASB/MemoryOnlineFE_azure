@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { AppRoutes } from "../pages/layout/AppRoutes";
 import { useConnectionStatus } from "../hooks/useConnectionStatus";
 
 export const PrivateRoute = () => {
@@ -9,7 +10,7 @@ export const PrivateRoute = () => {
 
   useEffect(() => {
     if (!hasToken) {
-      navigate("/login", { replace: true });
+      navigate(AppRoutes.login, { replace: true });
     }
   }, [hasToken, navigate]);
 

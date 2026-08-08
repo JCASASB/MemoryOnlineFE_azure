@@ -8,6 +8,7 @@ import { apiService } from "../../../../infrastructure/api/apiService";
 import { jwtDecode } from "jwt-decode";
 import { SignalRGameHub } from "../../../../infrastructure/signalr/SignalRGameHub";
 import * as S from "./Login.styles"; // <-- Importación de los estilos agregada
+import { AppRoutes } from "../../layout/AppRoutes";
 import { env } from "../../../utils/HelperConfigs";
 
 export const Login = () => {
@@ -53,7 +54,7 @@ export const Login = () => {
           SignalRGameHub.setCredentials(env.signalRHubUrl(), token);
           SignalRGameHub.initializeInstance();
 
-          navigate("/");
+          navigate(AppRoutes.home);
         } catch (decodeError) {
           console.error("Error al decodificar el token:", decodeError);
           setError("Token inválido recibido del servidor.");

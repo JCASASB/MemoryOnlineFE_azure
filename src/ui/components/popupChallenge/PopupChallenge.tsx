@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePlayer } from "../../hooks/usePlayer";
 import { useUCs } from "../../hooks/useUCs";
+import { AppRoutes } from "../../pages/layout/AppRoutes";
 import * as S from "./PopupChallenge.styles"; // <-- Importación de los estilos agregada
 
 const ADJECTIVES = [
@@ -68,7 +69,7 @@ export const PopupChallenge = ({
       await createChallengeUC(match.id, playerId, opponentIdPlayer);
 
       navigate(
-        `/gameboard?level=${level}&gameName=${encodeURIComponent(gameName)}`,
+        `${AppRoutes.gameBoard}?level=${level}&gameName=${encodeURIComponent(gameName)}`,
       );
     } catch (err) {
       setError(

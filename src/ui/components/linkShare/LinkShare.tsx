@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { AppRoutes } from "../../pages/layout/AppRoutes";
 
 export const LinkShare: React.FC = () => {
   const location = useLocation();
@@ -14,7 +15,7 @@ export const LinkShare: React.FC = () => {
       // Build a hash-router friendly URL pointing to /join with gameName
       const origin = window.location.origin;
       const base = window.location.pathname || "/";
-      return `${origin}${base}#/join?gameName=${encodeURIComponent(gameName)}`;
+      return `${origin}${base}#${AppRoutes.join}?gameName=${encodeURIComponent(gameName)}`;
     } catch (e) {
       return "";
     }

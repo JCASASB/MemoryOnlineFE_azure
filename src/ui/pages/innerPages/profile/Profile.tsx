@@ -4,6 +4,7 @@ import type { PlayerStats } from "./PlayerStats";
 import { useDependencies } from "../../../context/useDependencies";
 import { usePlayer } from "../../../hooks/usePlayer";
 import { apiService } from "../../../../infrastructure/api/apiService";
+import { AppRoutes } from "../../layout/AppRoutes";
 import {
   ProfileWrapper,
   UserHeader,
@@ -47,7 +48,7 @@ export const Profile = () => {
     if (window.confirm("¿Estás seguro de que quieres cerrar sesión?")) {
       await onlineRepository.clearAll();
 
-      navigate("/login");
+      navigate(AppRoutes.login);
     }
   };
 

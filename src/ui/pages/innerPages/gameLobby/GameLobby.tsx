@@ -7,6 +7,7 @@ import { useDependencies } from "../../../context/useDependencies";
 import type { Challenge } from "../../../../core/chat/domain/entities/Challenge";
 import { ItemChallenge } from "../../../components/itemChallenge/ItemChallenge";
 import * as S from "./GameLobby.styles"; // <-- Importación de los estilos agregada
+import { AppRoutes } from "../../layout/AppRoutes";
 
 export const GameLobby = () => {
   const { playerName, playerId } = usePlayer();
@@ -31,7 +32,9 @@ export const GameLobby = () => {
     setJoiningId(challenge.id);
     try {
       joinGameByMatchIdUC(challenge.matchId, playerName, playerId).then(() => {
-        navigate(`/gameboard?matchId=${encodeURIComponent(challenge.matchId)}`);
+        navigate(
+          `${AppRoutes.gameBoard}?matchId=${encodeURIComponent(challenge.matchId)}`,
+        );
       });
     } catch (err) {
       console.error("Error joining challenge:", err);

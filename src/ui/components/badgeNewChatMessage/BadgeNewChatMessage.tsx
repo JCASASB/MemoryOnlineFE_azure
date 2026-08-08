@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { AppRoutes } from "../../pages/layout/AppRoutes";
 import { useDependencies } from "../../context/useDependencies";
 
 export const BadgeNewChatMessage = ({ location }: { location: string }) => {
-  const isActiveTabChat = location === "/chat";
+  const isActiveTabChat = location === AppRoutes.chat;
   const { chatRepository } = useDependencies();
   const [isNewChatMessage, setIsNewChatMessage] = useState(false);
 
