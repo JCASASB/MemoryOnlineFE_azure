@@ -3,6 +3,7 @@ import whichTransitionEventF from "./extra";
 import { StateCard } from "../../../core/game/domain/entities/StateCard";
 import { useAnimations } from "../../hooks/useAnimations";
 import { CardContainer } from "./MemoryCard.styles";
+import { getSquareColor } from "./MemoryCard.utils";
 
 interface MemoryCardProps {
   id: string;
@@ -10,6 +11,32 @@ interface MemoryCardProps {
   stateCard: StateCard;
   flip: (id: string) => void;
 }
+
+const renderSquares = (value: number) => {
+  const squares = Array.from({ length: value }, (_, i) => i);
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `repeat(${Math.min(value, 3)}, 1fr)`,
+        gap: 4,
+        padding: 8,
+      }}
+    >
+      {squares.map((i) => (
+        <div
+          key={i}
+          style={{
+            width: 16,
+            height: 16,
+            backgroundColor: getSquareColor(value),
+            borderRadius: 2,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 export const MemoryCard = ({ id, value, stateCard, flip }: MemoryCardProps) => {
   const { addAnimationInProgress, removeAnimationInProgress } = useAnimations();
@@ -62,12 +89,13 @@ export const MemoryCard = ({ id, value, stateCard, flip }: MemoryCardProps) => {
       ref={containerRef}
       $stateCard={stateCard}
       $isAnimating={isAnimatingThisCard}
+      $value={value}
       data-state={StateCard[stateCard]}
       onClick={handleClick}
     >
       <div className="card-inner">
         <div className="card-front">?</div>
-        <div className="card-back">{value}</div>
+        <div className="card-back">{renderSquares(value)}</div>
       </div>
     </CardContainer>
   );

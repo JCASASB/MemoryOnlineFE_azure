@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import { StateCard } from "../../../core/game/domain/entities/StateCard";
+import { getBackColor } from "./MemoryCard.utils";
 
 export const CardContainer = styled.div<{
   $stateCard: StateCard;
   $isAnimating: boolean;
+  $value: number;
 }>`
   width: 100%;
   max-width: 160px;
@@ -45,7 +47,7 @@ export const CardContainer = styled.div<{
   }
 
   .card-back {
-    background: #f0f0f0;
+    background: ${({ $value }) => getBackColor($value)};
     transform: rotateY(180deg);
   }
 `;

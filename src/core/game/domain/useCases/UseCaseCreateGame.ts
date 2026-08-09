@@ -18,7 +18,7 @@ export class UseCaseCreateGame {
     for (let i = 0; i < level; i++) {
       let value = 0;
       do {
-        value = Math.floor(Math.random() * 9999) + 1;
+        value = Math.floor(Math.random() * level) + 1;
       } while (usedValues.has(value));
 
       usedValues.add(value);
