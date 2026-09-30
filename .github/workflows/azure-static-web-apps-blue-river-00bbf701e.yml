@@ -14,6 +14,9 @@ jobs:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
     name: Build and Deploy Job
+    env:
+      VITE_GRAFANA_FARO_URL: https://faro-collector-prod-eu-central-0.grafana.net/collect/36858197cf5a511959f16a41f36511ac
+      VITE_APP_VERSION: ${{ github.sha }}
     permissions:
        id-token: write
        contents: read
