@@ -14,8 +14,9 @@ if (faroUrl) {
       environment: import.meta.env.MODE,
       version: import.meta.env.VITE_APP_VERSION ?? "local",
     },
-    // Solo se recoge una de cada diez sesiones para proteger la cuota gratuita.
-    sessionTracking: { samplingRate: 0.1 },
+    // La aplicación tiene poco tráfico y se recogen todas las sesiones para
+    // que los errores y las métricas aparezcan de forma fiable en Grafana.
+    sessionTracking: { samplingRate: 1 },
     instrumentations: [
       ...getWebInstrumentations(),
       new TracingInstrumentation(),
