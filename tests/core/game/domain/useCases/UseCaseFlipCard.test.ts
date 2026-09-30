@@ -1,18 +1,20 @@
 import { Game } from "@core/game/domain/entities/Game";
 import { StateCard } from "@core/game/domain/entities/StateCard";
 import { UseCaseFlipCard } from "@core/game/domain/useCases/UseCaseFlipCard";
+import { Joker } from "@core/game/domain/entities/Joker";
 import { card, player } from "./fixtures";
 
 describe("UseCaseFlipCard", () => {
   it("gira una carta y descuenta un movimiento al jugador que tiene el turno", () => {
     // Se prepara un estado valido: jugador activo, movimientos disponibles y carta boca abajo.
+    const jokers = [new Joker("joker-1", "Vista previa", 1, 0)];
     const game = new Game(
       "game-1",
       "partida",
       1,
       3,
       [card("card-1", 7)],
-      [player("player-1", true, 2, 4)],
+      [player("player-1", true, 2, 4, 0, jokers)],
     );
 
     const result = new UseCaseFlipCard().execute(
@@ -29,6 +31,8 @@ describe("UseCaseFlipCard", () => {
       totalMoves: 5,
       turn: true,
     });
+    // Crear el nuevo estado no debe eliminar los comodines que ya posee el jugador.
+    expect(result?.players[0].jokers).toEqual(jokers);
     expect(game.cards[0].state).toBe(StateCard.FaceDown);
   });
 

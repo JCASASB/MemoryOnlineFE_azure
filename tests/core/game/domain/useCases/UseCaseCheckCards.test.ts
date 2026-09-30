@@ -1,11 +1,13 @@
 import { Game } from "@core/game/domain/entities/Game";
 import { StateCard } from "@core/game/domain/entities/StateCard";
 import { UseCaseCheckCards } from "@core/game/domain/useCases/UseCaseCheckCards";
+import { Joker } from "@core/game/domain/entities/Joker";
 import { card, player } from "./fixtures";
 
 describe("UseCaseCheckCards", () => {
   it("marca la pareja, suma un punto y mantiene el turno", () => {
     // Dos cartas levantadas con el mismo valor constituyen una pareja valida.
+    const jokers = [new Joker("joker-1", "Turno extra", 2, 0)];
     const game = new Game(
       "game-1",
       "partida",
@@ -15,7 +17,10 @@ describe("UseCaseCheckCards", () => {
         card("card-1", 9, StateCard.FaceUp),
         card("card-2", 9, StateCard.FaceUp),
       ],
-      [player("player-1", true, 0, 2, 1), player("player-2", false)],
+      [
+        player("player-1", true, 0, 2, 1, jokers),
+        player("player-2", false),
+      ],
     );
 
     const result = new UseCaseCheckCards().execute(game);
@@ -30,6 +35,8 @@ describe("UseCaseCheckCards", () => {
       turn: true,
     });
     expect(result?.players[1].turn).toBe(false);
+    // Resolver las cartas genera un estado nuevo y debe conservar los comodines.
+    expect(result?.players[0].jokers).toEqual(jokers);
   });
 
   it("oculta cartas distintas y cambia el turno", () => {

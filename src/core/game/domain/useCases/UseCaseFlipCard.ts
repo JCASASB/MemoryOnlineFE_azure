@@ -88,6 +88,7 @@ export class UseCaseFlipCard {
           p.totalMoves + 1,
           p.points,
           true,
+          p.jokers,
         );
       } else {
         return p;

@@ -1,5 +1,6 @@
 import { Card } from "@core/game/domain/entities/Card";
 import { Player } from "@core/game/domain/entities/Player";
+import { Joker } from "@core/game/domain/entities/Joker";
 import { StateCard } from "@core/game/domain/entities/StateCard";
 
 export const card = (
@@ -14,4 +15,6 @@ export const player = (
   remainMoves = 2,
   totalMoves = 0,
   points = 0,
-): Player => new Player(id, id, 0, remainMoves, totalMoves, points, turn);
+  jokers: Joker[] = [],
+): Player =>
+  new Player(id, id, 0, remainMoves, totalMoves, points, turn, jokers);

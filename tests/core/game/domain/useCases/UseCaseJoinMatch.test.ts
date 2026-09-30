@@ -24,6 +24,13 @@ describe("UseCaseJoinMatch", () => {
       order: 0,
       remainMoves: 2,
       turn: true,
+      jokers: [
+        {
+          name: "extracard",
+          type: 0,
+          status: 1,
+        },
+      ],
     });
   });
 

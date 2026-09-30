@@ -5,38 +5,7 @@ import { usePlayer } from "../../hooks/usePlayer";
 import { useUCs } from "../../hooks/useUCs";
 import { AppRoutes } from "../../pages/layout/AppRoutes";
 import * as S from "./PopupChallenge.styles"; // <-- Importación de los estilos agregada
-
-const ADJECTIVES = [
-  "rapido",
-  "furioso",
-  "astuto",
-  "veloz",
-  "feroz",
-  "noble",
-  "bravo",
-  "listo",
-  "audaz",
-  "fiero",
-];
-const NOUNS = [
-  "leon",
-  "tigre",
-  "aguila",
-  "lobo",
-  "zorro",
-  "oso",
-  "puma",
-  "halcon",
-  "jaguar",
-  "cobra",
-];
-
-const generateGameName = () => {
-  const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
-  const num = Math.floor(Math.random() * 9000) + 1000;
-  return `${adj}-${noun}-${num}`;
-};
+import { generateGameName } from "./generateGameName";
 
 type PopupChallengeProps = {
   opponentName: string;
@@ -58,25 +27,26 @@ export const PopupChallenge = ({
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState("");
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     setIsCreating(true);
     setError("");
 
-    try {
-      const match = await createMatchUC(Number(level), gameName);
-
-      await createChallengeUC(match.id, playerId, opponentIdPlayer);
-
-      navigate(
-        `${AppRoutes.gameBoard}?level=${level}&gameName=${encodeURIComponent(gameName)}`,
-      );
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Error al crear la partida.",
-      );
-      setIsCreating(false);
-    }
+    createMatchUC(Number(level), gameName)
+      .then((match) =>
+        createChallengeUC(match.id, playerId, opponentIdPlayer),
+      )
+      .then(() => {
+        navigate(
+          `${AppRoutes.gameBoard}?level=${level}&gameName=${encodeURIComponent(gameName)}`,
+        );
+      })
+      .catch((err) => {
+        setError(
+          err instanceof Error ? err.message : "Error al crear la partida.",
+        );
+        setIsCreating(false);
+      });
   };
 
   return (

@@ -1,4 +1,6 @@
 import { Game } from "../entities/Game";
+import { Joker } from "../entities/Joker";
+import { JokerType } from "../entities/JokerType";
 import { Player } from "../entities/Player";
 
 import { v4 as uuidv4 } from "uuid";
@@ -26,6 +28,7 @@ export class UseCaseJoinMatch {
       0,
       0,
       playersInGame.length === 0,
+      [new Joker(uuidv4(), "extracard", JokerType.ExtraCard, 1)],
     );
   }
 

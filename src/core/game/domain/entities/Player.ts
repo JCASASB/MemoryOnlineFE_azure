@@ -1,3 +1,5 @@
+import { Joker } from "./Joker";
+
 export class Player {
   constructor(
     public readonly id: string,
@@ -7,5 +9,6 @@ export class Player {
     public readonly totalMoves: number,
     public readonly points: number,
     public readonly turn: boolean,
+    public readonly jokers: Joker[],
   ) {}
 }

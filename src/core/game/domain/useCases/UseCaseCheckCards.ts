@@ -80,6 +80,7 @@ export class UseCaseCheckCards {
               p.totalMoves,
               p.points + 1,
               true,
+              p.jokers,
             );
           } else {
             return p;
@@ -96,6 +97,7 @@ export class UseCaseCheckCards {
               p.totalMoves,
               p.points,
               false,
+              p.jokers,
             );
           } else {
             return new Player(
@@ -106,6 +108,7 @@ export class UseCaseCheckCards {
               p.totalMoves,
               p.points,
               true,
+              p.jokers,
             );
           }
         }
