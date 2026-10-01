@@ -13,6 +13,22 @@ La parte core donde reside el dominio y aplicacion la he separado en dos modulos
 Está diseñado para mantener logica del juego dentro de la app react. Esto es, no se centraliza en el back end o sea el BE no tiene el control del juego. El estado del juego se mantiene en el navegador, se modifica el estado y se envia al BE, que reenvia al adversario. (Experimento para ahorrar procesamiento en el BE...) como es obvio conlleva alguna deficiencia de seguridad. (Estado es visible a traves de las debug tools del browser ).
 Algún tipo de encriptacion podria mitigarlo.
 
+## Sincronizar el repositorio público
+
+Después de confirmar los cambios en la rama `main`, ejecuta:
+
+```powershell
+.\scripts\sync-public-repo.ps1
+```
+
+El script actualiza `MemoryOnlineFE_azure/main` y copia sus commits a
+`MemoryOnlineFE/main`. Se detiene si hay cambios locales sin commit. Si el
+repositorio público ha divergido y quieres reemplazarlo deliberadamente:
+
+```powershell
+.\scripts\sync-public-repo.ps1 -ForceMirror
+```
+
 El juego mantiene los estados del board completos (json) en una base de datos en el navegador de tipo indexedDb gestionada con libreria Dexie. Un motor timer (un worker) va consultando por si hay algun estado nuevo a aplicar en la interfaz.
 
 O:)
