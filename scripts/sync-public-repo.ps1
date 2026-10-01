@@ -1,4 +1,4 @@
-param([switch]$ForceMirror)
+param([string]$SnapshotMessage = "Update public source snapshot")
 
 $ErrorActionPreference = "Stop"
 $publicRepository = "https://github.com/JCASASB/MemoryOnlineFE.git"
@@ -11,13 +11,15 @@ function Invoke-Git {
     }
 }
 
-Push-Location (Resolve-Path (Join-Path $PSScriptRoot ".."))
-try {
-    $branch = (git branch --show-current).Trim()
-    if ($branch -ne "main") {
-        throw "Ejecuta el script desde main. Rama actual: $branch"
-    }
+$repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
+$snapshotRoot = Join-Path $env:TEMP ("memoryonlinefe-public-" + [guid]::NewGuid())
+$archivePath = Join-Path $env:TEMP ("memoryonlinefe-public-" + [guid]::NewGuid() + ".zip")
 
+Push-Location $repositoryRoot
+try {
+    if ((git branch --show-current).Trim() -ne "main") {
+        throw "Ejecuta el script desde la rama main."
+    }
     $changes = git status --porcelain
     if ($changes) {
         throw "Hay cambios locales sin commit. Confírmalos antes de sincronizar:`n$changes"
@@ -27,30 +29,53 @@ try {
     Invoke-Git fetch origin main
     Invoke-Git pull --ff-only origin main
     Invoke-Git push origin main
-
-    Write-Host "Comparando MemoryOnlineFE/main..."
-    Invoke-Git fetch $publicRepository "+refs/heads/main:refs/remotes/public/main"
     $sourceCommit = (git rev-parse main).Trim()
-    $publicCommit = (git rev-parse refs/remotes/public/main).Trim()
+    $sourceShortCommit = (git rev-parse --short main).Trim()
 
-    & git merge-base --is-ancestor refs/remotes/public/main main
-    if ($LASTEXITCODE -eq 0) {
-        Invoke-Git push $publicRepository "main:main"
+    New-Item -ItemType Directory -Path $snapshotRoot | Out-Null
+    Invoke-Git archive --format=zip --output=$archivePath main
+    Expand-Archive -Path $archivePath -DestinationPath $snapshotRoot
+
+    # El repositorio público nunca contiene configuración de producción.
+    Get-ChildItem $snapshotRoot -Recurse -Force -File |
+        Where-Object { $_.Name -eq ".env" -or $_.Name -like ".env.production*" } |
+        Remove-Item -Force
+
+    $publicGitIgnore = Join-Path $snapshotRoot ".gitignore"
+    Add-Content -Path $publicGitIgnore -Value @(
+        "",
+        "# Production environment files are never published",
+        ".env",
+        ".env.production",
+        ".env.production.*"
+    )
+
+    Push-Location $snapshotRoot
+    try {
+        Invoke-Git init --initial-branch=main
+        Invoke-Git config user.name "JCASASB"
+        Invoke-Git config user.email "hispalance@gmail.com"
+        Invoke-Git add --all
+        Invoke-Git commit -m "$SnapshotMessage ($sourceShortCommit)"
+
+        # main público es deliberadamente una instantánea sin historial anterior.
+        Invoke-Git push $publicRepository main:main --force
+        $snapshotCommit = (git rev-parse main).Trim()
     }
-    elseif ($ForceMirror) {
-        Write-Warning "Se reemplazará MemoryOnlineFE/main por MemoryOnlineFE_azure/main."
-        Invoke-Git push $publicRepository "main:main" "--force-with-lease=refs/heads/main:$publicCommit"
-    }
-    else {
-        throw "Las ramas han divergido. Revisa los cambios o usa -ForceMirror para reemplazar el repositorio público."
+    finally {
+        Pop-Location
     }
 
     $remoteCommit = (git ls-remote $publicRepository refs/heads/main).Split("`t")[0]
-    if ($remoteCommit -ne $sourceCommit) {
-        throw "La verificación final falló: los repositorios no coinciden."
+    if ($remoteCommit -ne $snapshotCommit) {
+        throw "La verificación final falló: GitHub no contiene la instantánea generada."
     }
-    Write-Host "Sincronización completada. Commit: $sourceCommit"
+    Write-Host "Repositorio público reemplazado por una instantánea de un commit."
+    Write-Host "Origen: $sourceCommit"
+    Write-Host "Snapshot público: $snapshotCommit"
 }
 finally {
     Pop-Location
+    if (Test-Path $snapshotRoot) { Remove-Item -Recurse -Force $snapshotRoot }
+    if (Test-Path $archivePath) { Remove-Item -Force $archivePath }
 }

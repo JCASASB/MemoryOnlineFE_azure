@@ -21,13 +21,11 @@ Después de confirmar los cambios en la rama `main`, ejecuta:
 .\scripts\sync-public-repo.ps1
 ```
 
-El script actualiza `MemoryOnlineFE_azure/main` y copia sus commits a
-`MemoryOnlineFE/main`. Se detiene si hay cambios locales sin commit. Si el
-repositorio público ha divergido y quieres reemplazarlo deliberadamente:
-
-```powershell
-.\scripts\sync-public-repo.ps1 -ForceMirror
-```
+El script actualiza `MemoryOnlineFE_azure/main` y genera `MemoryOnlineFE/main`
+como una instantánea con un único commit. El repositorio público no hereda el
+historial de commits y excluye `.env`, `.env.production` y todas sus variantes.
+Se conserva `.env.development`, porque solo contiene las URLs locales de
+Kubernetes. El script se detiene si existen cambios locales sin commit.
 
 El juego mantiene los estados del board completos (json) en una base de datos en el navegador de tipo indexedDb gestionada con libreria Dexie. Un motor timer (un worker) va consultando por si hay algun estado nuevo a aplicar en la interfaz.
 
