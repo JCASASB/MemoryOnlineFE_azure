@@ -23,7 +23,8 @@ Después de confirmar los cambios en la rama `main`, ejecuta:
 
 El script actualiza `MemoryOnlineFE_azure/main` y genera `MemoryOnlineFE/main`
 como una instantánea con un único commit. El repositorio público no hereda el
-historial de commits y excluye `.env`, `.env.production` y todas sus variantes.
+historial de commits y excluye `.env`, `.env.production`, todas sus variantes y
+los workflows de GitHub Actions.
 Se conserva `.env.development`, porque solo contiene las URLs locales de
 Kubernetes. El script se detiene si existen cambios locales sin commit.
 

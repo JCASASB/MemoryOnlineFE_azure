@@ -41,13 +41,19 @@ try {
         Where-Object { $_.Name -eq ".env" -or $_.Name -like ".env.production*" } |
         Remove-Item -Force
 
+    $workflowDirectory = Join-Path $snapshotRoot ".github\workflows"
+    if (Test-Path $workflowDirectory) {
+        Remove-Item -Recurse -Force $workflowDirectory
+    }
+
     $publicGitIgnore = Join-Path $snapshotRoot ".gitignore"
     Add-Content -Path $publicGitIgnore -Value @(
         "",
         "# Production environment files are never published",
         ".env",
         ".env.production",
-        ".env.production.*"
+        ".env.production.*",
+        ".github/workflows/"
     )
 
     Push-Location $snapshotRoot
