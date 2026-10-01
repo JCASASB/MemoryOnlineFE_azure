@@ -46,6 +46,11 @@ try {
         Remove-Item -Recurse -Force $workflowDirectory
     }
 
+    $scriptsDirectory = Join-Path $snapshotRoot "scripts"
+    if (Test-Path $scriptsDirectory) {
+        Remove-Item -Recurse -Force $scriptsDirectory
+    }
+
     $publicGitIgnore = Join-Path $snapshotRoot ".gitignore"
     Add-Content -Path $publicGitIgnore -Value @(
         "",
@@ -53,7 +58,8 @@ try {
         ".env",
         ".env.production",
         ".env.production.*",
-        ".github/workflows/"
+        ".github/workflows/",
+        "scripts/"
     )
 
     Push-Location $snapshotRoot
