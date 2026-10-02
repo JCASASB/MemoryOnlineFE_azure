@@ -6,7 +6,7 @@ export class GameDatabase extends Dexie {
   // Cambiamos a 'any' o a una interfaz que acepte tu nueva estructura
   games!: Table<any, [string, number]>;
   // Definimos la nueva tabla
-  settings!: Table<{ key: string; value: any }, string>;
+  settings!: Table<{ key: string; value: any; }, string>;
 
   constructor() {
     super("GameDatabase");
@@ -21,15 +21,15 @@ export class GameDatabase extends Dexie {
   /**
    * Guarda la versión aplicada
    */
-  async setAppliedVersion(version: number): Promise<void> {
-    await this.settings.put({ key: "gameVersionApplied", value: version });
+  async setAppliedVersion(version: number, matchId: string): Promise<void> {
+    await this.settings.put({ key: "gameVersionApplied:" + matchId, value: version });
   }
 
   /**
    * Obtiene la versión aplicada (devuelve 0 si no existe)
    */
-  async getAppliedVersion(): Promise<number> {
-    const setting = await this.settings.get("gameVersionApplied");
+  async getAppliedVersion(matchId: string): Promise<number> {
+    const setting = await this.settings.get("gameVersionApplied:" + matchId);
     return setting ? setting.value : 0;
   }
 
@@ -112,9 +112,9 @@ export class GameDatabase extends Dexie {
     // Ensure cards' state values are numeric StateCard
     const cards = Array.isArray(raw.cards)
       ? raw.cards.map((c: any) => ({
-          ...c,
-          state: this.toStateCard(c.state) ?? StateCard.FaceDown,
-        }))
+        ...c,
+        state: this.toStateCard(c.state) ?? StateCard.FaceDown,
+      }))
       : [];
 
     return {

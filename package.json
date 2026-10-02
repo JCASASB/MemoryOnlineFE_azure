@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1036.0",
+    "@babylonjs/core": "^8.56.2",
     "@grafana/faro-react": "^2.12.1",
     "@grafana/faro-web-tracing": "^2.12.1",
     "@microsoft/signalr": "^10.0.0",

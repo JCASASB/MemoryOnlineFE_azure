@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { DependencyContext } from "./DependencyContextInstance";
 import type { MemoryContextType } from "./DependencyContextInstance";
 import { OnlineMemoryGameRepository } from "../../infrastructure/repositories/OnlineMemoryGameRepository";
@@ -20,6 +20,8 @@ import { ChatRepository } from "../../infrastructure/repositories/ChatRepository
 import { ApplicationJoinGameByMatchId } from "../../core/game/application/ApplicationJoinGameByMatchId";
 import { ApplicationCreateChallenge } from "../../core/chat/application/ApplicationCreateChallenge";
 import { UseCaseCreateChallenge } from "../../core/chat/domain/useCases/UseCaseCreateChallenge";
+
+import { env } from "../utils/HelperConfigs";
 
 interface Props {
   children: React.ReactNode;
@@ -73,6 +75,14 @@ export const DependencyProvider = ({ children }: Props) => {
         new UseCaseJoinMatch(),
       ),
     };
+  }, []);
+
+  //si refresca el navegador
+  useEffect(() => {
+    const token = localStorage.getItem("auth-jbearer-token");
+    if (!token) return;
+    SignalRGameHub.setCredentials(env.signalRHubUrl(), token);
+    SignalRGameHub.initializeInstance();
   }, []);
 
   return (

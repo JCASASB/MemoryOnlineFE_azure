@@ -1,60 +1,51 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDependencies } from "../context/useDependencies";
 import { Game } from "../../core/game/domain/entities/Game";
 
 /**
- * Hook unificado para el juego (offline y online).
+ * Reads queued states serially. A match change cancels results from the old reader.
+ * The worker only schedules ticks; the repository controls versions and animations.
  */
-export const useGameState = () => {
+export const useGameState = (matchKey = "") => {
   const [stateGame, setStateGame] = useState<Game>(new Game("", "", 0, 0));
-
   const { getNextStateUseCase, getLastAppliedStateUseCase } = useDependencies();
 
-  // 1. Tipamos el Ref correctamente para que acepte Worker o null
-  const workerRef = useRef<Worker | null>(null);
-
-  // Carga el último estado persistido al montar
   useEffect(() => {
-    getLastAppliedStateUseCase.execute().then((lastState) => {
-      if (lastState) {
-        setStateGame(lastState);
-      }
-    });
-  }, [getLastAppliedStateUseCase]);
+    let cancelled = false;
+    let reading = false;
+    let initialized = false;
+    setStateGame(new Game("", "", 0, 0));
 
-  useEffect(() => {
-    // 2. Creamos la instancia en una variable local para asegurar que no sea null ante TS
-    const workerInstance = new Worker(
-      new URL("./dbWorker.js", import.meta.url),
-      { type: "module" },
-    );
-
-    workerRef.current = workerInstance;
-
-    // 3. Tipamos el evento como MessageEvent para evitar el error de 'any'
-    workerInstance.onmessage = async (event: MessageEvent) => {
-      if (event.data.type === "UPDATE_READY") {
-        console.log("Notificación del worker:", event.data.payload);
-
-        const state = await getNextStateUseCase.execute();
+    const readState = async () => {
+      if (cancelled || reading) return;
+      reading = true;
+      try {
+        const state = initialized
+          ? await getNextStateUseCase.execute()
+          : await getLastAppliedStateUseCase.execute();
+        if (cancelled) return;
         if (state) {
-          console.log(`Estado actualizado desde el contador: `, state);
+          initialized = true;
           setStateGame(state);
         }
+      } catch (error) {
+        if (!cancelled) console.error("No se pudo leer el estado de la partida:", error);
+      } finally {
+        reading = false;
       }
     };
 
-    // 4. Usamos la instancia local para enviar el mensaje inicial
-    workerInstance.postMessage("start");
-
-    // Limpieza al desmontar el componente
-    return () => {
-      workerInstance.terminate();
-      workerRef.current = null;
+    const worker = new Worker(new URL("./dbWorker.ts", import.meta.url), { type: "module" });
+    worker.onmessage = (event: MessageEvent) => {
+      if (event.data.type === "UPDATE_READY") void readState();
     };
-  }, [getNextStateUseCase]); // Añadida dependencia para consistencia
+    void readState();
+    worker.postMessage("start");
+    return () => {
+      cancelled = true;
+      worker.terminate();
+    };
+  }, [matchKey, getNextStateUseCase, getLastAppliedStateUseCase]);
 
-  return {
-    stateGame: stateGame,
-  };
+  return { stateGame };
 };
