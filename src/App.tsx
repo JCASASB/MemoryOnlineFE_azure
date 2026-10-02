@@ -1,6 +1,6 @@
 import "./App.css";
 import { DependencyProvider } from "./ui/context/DependencyContext";
-import { GameBoard } from "./ui/pages/innerPages/gameBoard/GameBoard";
+import { GameBoardBabylon } from "./ui/pages/innerPages/gameBoardBabylon/GameBoardBabylon";
 import { Home } from "./ui/pages/innerPages/home/Home";
 import { Login } from "./ui/pages/innerPages/login/Login";
 import { UploadPhotos } from "./ui/pages/innerPages/UploadPhotos";
@@ -24,7 +24,7 @@ function App() {
               <Route path={AppRoutes.gameLobby} element={<GameLobby />} />
               <Route path={AppRoutes.uploadPhotos} element={<UploadPhotos />} />
               <Route path={AppRoutes.chat} element={<Chat />} />
-              <Route path={AppRoutes.gameBoard} element={<GameBoard />} />
+              <Route path={AppRoutes.gameBoard} element={<GameBoardBabylon />} />
               <Route path={AppRoutes.profile} element={<Profile />} />
             </Route>
           </Route>

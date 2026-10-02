@@ -64,7 +64,10 @@ export class OnlineMemoryGameRepository implements GameRepositoryType {
 
   async goToNextVersionState(): Promise<Game | undefined> {
     if (!this.areAnimationsInProgress()) {
-      const versionApplied = await db.getAppliedVersion();
+      const matchId = await db.getMatchId();
+      if (!matchId) throw new Error("Match ID not found");
+
+      const versionApplied = await db.getAppliedVersion(matchId);
       return this.goToVersionState(versionApplied + 1);
     }
     return undefined;
@@ -72,8 +75,11 @@ export class OnlineMemoryGameRepository implements GameRepositoryType {
 
   async goToLastAppliedState(): Promise<Game | undefined> {
     if (!this.areAnimationsInProgress()) {
-      const versionApplied = await db.getAppliedVersion();
-      return this.goToVersionState(versionApplied);
+      const matchId = await this.getMatchId();
+
+      const versionApplied = await db.getAppliedVersion(matchId);
+      const applied = await this.goToVersionState(versionApplied);
+      if (applied) return applied;
     }
     return undefined;
   }
@@ -82,7 +88,7 @@ export class OnlineMemoryGameRepository implements GameRepositoryType {
     const matchId = await this.getMatchId();
     const stored = await db.getGame(matchId, stateVersion);
     if (stored) {
-      await db.setAppliedVersion(stored.version);
+      await db.setAppliedVersion(stored.version, matchId);
       return stored;
     }
     return undefined;
@@ -100,9 +106,10 @@ export class OnlineMemoryGameRepository implements GameRepositoryType {
 
   async processStateFromQueue(): Promise<Game | undefined> {
     if (!this.areAnimationsInProgress()) {
-      const version = await db.getAppliedVersion();
       const matchId = await db.getMatchId();
       if (!matchId) throw new Error("Match ID not found");
+
+      const version = await db.getAppliedVersion(matchId);
 
       const record = await db.getGame(matchId, version + 1);
       if (!record)
