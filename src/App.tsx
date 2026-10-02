@@ -11,6 +11,7 @@ import { Layout } from "./ui/pages/layout/Layout";
 import { AppRoutes } from "./ui/pages/layout/AppRoutes";
 import { GameLobby } from "./ui/pages/innerPages/gameLobby/GameLobby";
 import { Profile } from "./ui/pages/innerPages/profile/Profile";
+import { GameBoard } from "./ui/pages/innerPages/gameBoard/GameBoard";
 
 function App() {
   return (
@@ -24,7 +25,8 @@ function App() {
               <Route path={AppRoutes.gameLobby} element={<GameLobby />} />
               <Route path={AppRoutes.uploadPhotos} element={<UploadPhotos />} />
               <Route path={AppRoutes.chat} element={<Chat />} />
-              <Route path={AppRoutes.gameBoard} element={<GameBoardBabylon />} />
+              <Route path={AppRoutes.gameBoard} element={<GameBoard />} />
+              <Route path={AppRoutes.gameBoard3D} element={<GameBoardBabylon />} />
               <Route path={AppRoutes.profile} element={<Profile />} />
             </Route>
           </Route>
